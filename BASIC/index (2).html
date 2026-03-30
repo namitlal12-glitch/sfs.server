@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SFS CONTROL MATRIX</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+margin:0;
+background:#020508;
+color:#00eaff;
+font-family:monospace;
+overflow-x:hidden;
+}
+
+/* HEADER */
+header{
+padding:12px;
+border-bottom:1px solid #00eaff;
+display:flex;
+justify-content:space-between;
+flex-wrap:wrap;
+}
+
+/* MAIN UI */
+.container{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+gap:12px;
+padding:12px;
+max-width:1100px;
+margin:auto;
+box-sizing:border-box;
+}
+
+.panel{
+border:1px solid #00eaff;
+padding:10px;
+box-shadow:0 0 10px #00eaff33;
+background:rgba(0,234,255,0.03);
+}
+
+button{
+width:100%;
+background:#000;
+color:#00eaff;
+border:1px solid #00eaff;
+padding:8px;
+margin:4px 0;
+font-size:14px;
+}
+
+/* CONSOLE */
+#console{
+position:fixed;
+bottom:0;
+width:100%;
+height:90px;
+background:#000;
+border-top:1px solid #00eaff;
+overflow-y:auto;
+font-size:12px;
+padding:5px;
+}
+
+/* LOGIN */
+#login{
+position:fixed;
+top:0;left:0;
+width:100%;height:100%;
+background:black;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:9999;
+}
+
+#login input{
+padding:10px;
+background:black;
+color:#00eaff;
+border:1px solid #00eaff;
+}
+
+#error{color:red;margin-top:5px;}
+
+/* RADAR (SAFE POSITION) */
+#radar{
+position:fixed;
+top:100px;
+left:20px;
+width:220px;
+height:220px;
+border-radius:50%;
+background:radial-gradient(circle,#001a22,#000);
+box-shadow:0 0 25px #00eaff55;
+z-index:1;
+}
+
+/* MOBILE FIX */
+@media(max-width:768px){
+
+#radar{
+position:static;
+margin:20px auto;
+display:block;
+}
+
+header{
+flex-direction:column;
+text-align:center;
+}
+
+}
+
+canvas{position:fixed;top:0;left:0;z-index:-1;}
+</style>
+</head>
+
+<body>
+
+<div id="login">
+<h2>ACCESS TERMINAL</h2>
+<input id="pass" placeholder="ENTER PASSWORD">
+<div id="error"></div>
+<button onclick="login()">ENTER</button>
+</div>
+
+<canvas id="bg"></canvas>
+<canvas id="radar" width="220" height="220"></canvas>
+
+<header>
+<h1>SFS CONTROL MATRIX</h1>
+<div>SYSTEM ONLINE</div>
+</header>
+
+<div class="container">
+
+<div class="panel">
+<h3>CORE SYSTEM</h3>
+<button onclick="log('INIT')">INIT</button>
+<button onclick="log('SYNC')">SYNC</button>
+<button onclick="log('BOOST')">BOOST</button>
+<button onclick="log('CHECK OK')">CHECK</button>
+</div>
+
+<div class="panel">
+<h3>SATELLITES</h3>
+<button onclick="log('SAT-01 LINKED')">SAT-01</button>
+<button onclick="log('SAT-02 LINKED')">SAT-02</button>
+<button onclick="log('SAT-03 ACTIVE')">SAT-03</button>
+</div>
+
+<div class="panel">
+<h3>SERVERS</h3>
+<button onclick="log('SRV-01 ACTIVE')">SRV-01</button>
+<button onclick="log('SRV-02 ACTIVE')">SRV-02</button>
+<button onclick="log('SRV-03 ACTIVE')">SRV-03</button>
+</div>
+
+<div class="panel">
+<h3>FLIGHT CONTROL</h3>
+<button onclick="launch()">LAUNCH</button>
+<button onclick="log('TRAJECTORY LOCKED')">LOCK</button>
+<button onclick="log('ENGINE STABLE')">ENGINE</button>
+</div>
+
+<div class="panel">
+<h3>DATA STREAM</h3>
+<button onclick="log('STREAM STARTED')">START</button>
+<button onclick="log('STREAM OK')">STATUS</button>
+<button onclick="log('STREAM STOPPED')">STOP</button>
+</div>
+
+<div class="panel">
+<h3>NETWORK</h3>
+<button onclick="log('NODE CONNECTED')">NODE</button>
+<button onclick="log('PACKET SENT')">SEND</button>
+<button onclick="log('SECURE LINK')">SECURE</button>
+</div>
+
+</div>
+
+<div id="console"></div>
+
+<script>
+
+let lock=false;
+
+document.getElementById("pass").addEventListener("keydown",function(e){
+if(e.key==="Enter"){login();}
+});
+
+function login(){
+if(lock) return;
+
+let p=document.getElementById("pass").value;
+let err=document.getElementById("error");
+
+if(p==="2026"){
+document.getElementById("login").style.display="none";
+log("ACCESS GRANTED");
+}else{
+err.innerText="❌ WRONG PASSWORD";
+lock=true;
+setTimeout(()=>{lock=false;},1500);
+}
+}
+
+function log(msg){
+let c=document.getElementById("console");
+c.innerHTML+="> "+msg+"<br>";
+c.scrollTop=c.scrollHeight;
+}
+
+function launch(){
+log("LAUNCH SEQUENCE");
+setTimeout(()=>log("3"),300);
+setTimeout(()=>log("2"),600);
+setTimeout(()=>log("1"),900);
+setTimeout(()=>log("LIFTOFF"),1200);
+}
+
+/* background */
+let bg=document.getElementById("bg");
+let ctx=bg.getContext("2d");
+
+function resize(){
+bg.width=window.innerWidth;
+bg.height=window.innerHeight;
+}
+resize();
+window.addEventListener("resize",resize);
+
+let stars=[];
+for(let i=0;i<120;i++){
+stars.push({x:Math.random()*bg.width,y:Math.random()*bg.height});
+}
+
+function draw(){
+ctx.fillStyle="#020508";
+ctx.fillRect(0,0,bg.width,bg.height);
+ctx.fillStyle="#00eaff";
+stars.forEach(s=>{
+ctx.fillRect(s.x,s.y,2,2);
+s.y+=1;
+if(s.y>bg.height)s.y=0;
+});
+}
+setInterval(draw,30);
+
+/* RADAR */
+let radar=document.getElementById("radar");
+let rctx=radar.getContext("2d");
+let angle=0;
+let blink=true;
+
+function drawRadar(){
+rctx.clearRect(0,0,220,220);
+
+rctx.beginPath();
+rctx.arc(110,110,90,0,Math.PI*2);
+rctx.strokeStyle="#00eaff";
+rctx.stroke();
+
+for(let i=1;i<=4;i++){
+rctx.beginPath();
+rctx.arc(110,110,i*20,0,Math.PI*2);
+rctx.strokeStyle="#003f55";
+rctx.stroke();
+}
+
+rctx.beginPath();
+rctx.moveTo(110,110);
+rctx.lineTo(
+110+Math.cos(angle)*90,
+110+Math.sin(angle)*90
+);
+rctx.strokeStyle="#00ff88";
+rctx.stroke();
+
+angle+=0.05;
+
+if(blink){
+rctx.beginPath();
+rctx.arc(140,110,3,0,Math.PI*2);
+rctx.fillStyle="#00ff88";
+rctx.fill();
+}
+}
+
+setInterval(drawRadar,30);
+setInterval(()=>{blink=!blink;},500);
+
+</script>
+
+</body>
+</html>
