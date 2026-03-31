@@ -16,54 +16,84 @@ body {
   overflow-x: hidden;
 }
 
-/* ===== TITLE ===== */
-h1 {
-  text-align: center;
-  margin: 20px 0;
-  font-size: 32px;
+/* ===== STARS ===== */
+body::before {
+  content: "";
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(#00eaff 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.2;
+  z-index: -1;
+}
+
+/* ===== HEADER ===== */
+.header {
+  padding: 15px 40px;
+  border-bottom: 1px solid #00eaff;
+}
+
+/* ===== MAIN LAYOUT ===== */
+.main {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+  padding: 20px 40px;
 }
 
 /* ===== RADAR ===== */
 .radar {
-  position: absolute;
-  top: 100px;
-  left: 60px;
-  width: 180px;
-  height: 180px;
+  width: 220px;
+  height: 220px;
   border: 2px solid #00eaff;
   border-radius: 50%;
-  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+  box-shadow: 0 0 20px #00eaff;
+}
+
+/* radar circles */
+.radar::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 2px #00eaff,
+              inset 0 0 0 40px transparent,
+              inset 0 0 0 80px transparent;
 }
 
 /* rotating line */
-.radar::after {
-  content: "";
+.line {
   position: absolute;
   width: 2px;
   height: 100%;
   background: #00ffcc;
   left: 50%;
   transform-origin: bottom;
-  animation: rotate 2s linear infinite;
+  animation: spin 2s linear infinite;
 }
 
-@keyframes rotate {
+@keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 
-/* ===== CONTAINER ===== */
+/* ===== GRID ===== */
 .container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
-  padding: 20px 40px;
+  width: 100%;
 }
 
 /* ===== BOX ===== */
 .box {
   border: 1px solid #00eaff;
   padding: 15px;
+  box-shadow: 0 0 10px #00eaff33;
 }
 
 .box h2 {
@@ -85,44 +115,26 @@ button {
 button:hover {
   background: #00eaff;
   color: black;
+  box-shadow: 0 0 10px #00eaff;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  border-top: 1px solid #00eaff;
+  padding: 10px 20px;
+  font-size: 14px;
 }
 
 /* ===== MOBILE ===== */
 @media (max-width: 768px) {
 
-  h1 {
-    font-size: 24px;
+  .main {
+    flex-direction: column;
+    align-items: center;
   }
 
   .container {
     grid-template-columns: 1fr;
-    padding: 10px;
-  }
-
-  .radar {
-    position: relative;
-    margin: 20px auto;
-    left: 0;
-    top: 0;
-  }
-
-  .box {
-    width: 95%;
-    margin: auto;
-  }
-
-}
-
-/* ===== SMALL MOBILE ===== */
-@media (max-width: 400px) {
-
-  h1 {
-    font-size: 20px;
-  }
-
-  button {
-    padding: 8px;
-    font-size: 12px;
   }
 
 }
@@ -132,61 +144,79 @@ button:hover {
 
 <body>
 
-<h1>SFS CONTROL MATRIX</h1>
+<div class="header">
+  <h2>SFS CONTROL MATRIX</h2>
+</div>
 
-<div class="radar"></div>
+<div class="main">
 
-<div class="container">
-
-  <div class="box">
-    <h2>CORE SYSTEM</h2>
-    <button>INIT</button>
-    <button>SYNC</button>
-    <button>BOOST</button>
-    <button>CHECK</button>
+  <div class="radar">
+    <div class="line"></div>
   </div>
 
-  <div class="box">
-    <h2>SATELLITES</h2>
-    <button>SAT-01</button>
-    <button>SAT-02</button>
-    <button>SAT-03</button>
-  </div>
+  <div class="container">
 
-  <div class="box">
-    <h2>SERVERS</h2>
-    <button>SRV-01</button>
-    <button>SRV-02</button>
-    <button>SRV-03</button>
-  </div>
+    <div class="box">
+      <h2>CORE SYSTEM</h2>
+      <button>INIT</button>
+      <button>SYNC</button>
+      <button>BOOST</button>
+      <button>CHECK</button>
+    </div>
 
-  <div class="box">
-    <h2>FLIGHT CONTROL</h2>
-    <button>LAUNCH</button>
-    <button>LOCK</button>
-    <button>ENGINE</button>
-  </div>
+    <div class="box">
+      <h2>SATELLITES</h2>
+      <button>SAT-01</button>
+      <button>SAT-02</button>
+      <button>SAT-03</button>
+    </div>
 
-  <div class="box">
-    <h2>DATA STREAM</h2>
-    <button>START</button>
-    <button>STATUS</button>
-    <button>STOP</button>
-  </div>
+    <div class="box">
+      <h2>SERVERS</h2>
+      <button>SRV-01</button>
+      <button>SRV-02</button>
+      <button>SRV-03</button>
+    </div>
 
-  <div class="box">
-    <h2>NETWORK</h2>
-    <button>NODE</button>
-    <button>SEND</button>
-    <button>SECURE</button>
+    <div class="box">
+      <h2>FLIGHT CONTROL</h2>
+      <button>LAUNCH</button>
+      <button>LOCK</button>
+      <button>ENGINE</button>
+    </div>
+
+    <div class="box">
+      <h2>DATA STREAM</h2>
+      <button>START</button>
+      <button>STATUS</button>
+      <button>STOP</button>
+    </div>
+
+    <div class="box">
+      <h2>NETWORK</h2>
+      <button>NODE</button>
+      <button>SEND</button>
+      <button>SECURE</button>
+    </div>
+
   </div>
 
 </div>
 
+<div class="footer">
+  > ACCESS GRANTED
+</div>
+
+<!-- SOUND -->
+<audio id="clickSound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
+
 <script>
+const sound = document.getElementById("clickSound");
+
 document.querySelectorAll("button").forEach(btn => {
   btn.onclick = () => {
-    console.log(btn.innerText + " CLICKED");
+    sound.currentTime = 0;
+    sound.play();
   };
 });
 </script>
