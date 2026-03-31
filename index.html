@@ -71,10 +71,10 @@ h1{margin:0}
   align-items:flex-start;
 }
 
-/* 🔥 PERFECT CIRCLE FIX (FINAL) */
+/* RADAR */
 .radar{
   width:240px;
-  height:240px;              /* 🔥 FIX: aspect-ratio हटाया */
+  height:240px;
   min-width:240px;
   min-height:240px;
   border-radius:50%;
@@ -82,10 +82,9 @@ h1{margin:0}
   box-shadow:0 0 50px #00eaff;
   position:relative;
   overflow:hidden;
-  flex-shrink:0;             /* stretch रोकता है */
+  flex-shrink:0;
 }
 
-/* rings */
 .radar::before{
   content:"";
   position:absolute;
@@ -101,7 +100,6 @@ h1{margin:0}
   border:1px solid #00eaff22;
 }
 
-/* sweep */
 .sweep{
   position:absolute;
   width:100%;
@@ -111,7 +109,6 @@ h1{margin:0}
   animation:spin 2s linear infinite;
 }
 
-/* DOT STATIC */
 .dot{
   position:absolute;
   width:6px;
@@ -163,12 +160,10 @@ h1{margin:0}
   background:black;
 }
 
-/* 📱 MOBILE (BACK TO ORIGINAL STYLE) */
+/* MOBILE */
 @media(max-width:768px){
 
-  body{
-    overflow:auto;
-  }
+  body{overflow:auto;}
 
   #app{
     padding:10px;
@@ -189,7 +184,7 @@ h1{margin:0}
 
   .radar{
     width:180px;
-    height:180px;   /* 🔥 FIX mobile */
+    height:180px;
   }
 
   .grid{
@@ -291,24 +286,30 @@ pass.addEventListener("keypress",e=>{
   if(e.key==="Enter") check();
 });
 
+/* ✅ FIXED RUN (BOTTOM STATUS SHOW) */
 function run(btn){
+
   let old=btn.innerText;
   let title=document.getElementById("title");
+  let p=document.getElementById("process");
 
   btn.innerText="PROCESSING...";
   btn.disabled=true;
 
   title.innerText=old+" PROCESSING...";
+  p.innerText="> "+old+" RUNNING...";
 
   setTimeout(()=>{
     btn.innerText="DONE";
     title.innerText="SUCCESS";
+    p.innerText="> SUCCESS";
   },800);
 
   setTimeout(()=>{
     btn.innerText=old;
     btn.disabled=false;
     title.innerText="SFS CONTROL MATRIX";
+    p.innerText="> ACCESS GRANTED";
   },1600);
 }
 
