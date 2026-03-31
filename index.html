@@ -6,136 +6,121 @@
 <title>SFS CONTROL MATRIX</title>
 
 <style>
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  background: black;
-  color: #00eaff;
-  font-family: monospace;
+body{
+  margin:0;
+  background:#020a0f;
+  color:#00eaff;
+  font-family:monospace;
+  overflow:hidden;
 }
 
-/* ===== STARS ===== */
-#stars {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
+/* ⭐ stars background */
+canvas{
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:-1;
 }
 
-/* ===== LOGIN SCREEN ===== */
-.login {
-  position: fixed;
-  inset: 0;
-  background: black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 20;
+/* 🔐 LOGIN */
+#login{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+}
+input{
+  background:black;
+  border:1px solid #00eaff;
+  color:#00eaff;
+  padding:10px;
+}
+button{
+  margin-top:10px;
+  padding:10px 20px;
+  background:black;
+  border:1px solid #00eaff;
+  color:#00eaff;
+  cursor:pointer;
 }
 
-.login-box {
-  border: 1px solid #00eaff;
-  padding: 30px;
-  text-align: center;
-  box-shadow: 0 0 20px #00eaff;
+/* MAIN UI */
+#main{
+  display:none;
+  padding:20px;
 }
 
-input {
-  padding: 10px;
-  margin-top: 10px;
-  background: black;
-  border: 1px solid #00eaff;
-  color: #00eaff;
-  width: 200px;
-  text-align: center;
+.top{
+  display:flex;
+  align-items:center;
+  gap:40px;
 }
 
-.msg {
-  margin-top: 10px;
-  height: 20px;
+/* 🔵 RADAR */
+.radar{
+  width:200px;
+  height:200px;
+  border:3px solid #00eaff;
+  border-radius:50%;
+  position:relative;
+  box-shadow:0 0 20px #00eaff;
+}
+.radar::before{
+  content:"";
+  position:absolute;
+  width:2px;
+  height:100%;
+  background:#00ffcc;
+  left:50%;
+  transform-origin:bottom;
+  animation:spin 3s linear infinite;
+}
+.dot{
+  width:6px;
+  height:6px;
+  background:#00ffcc;
+  border-radius:50%;
+  position:absolute;
+  top:30%;
+  left:60%;
+  animation:blink 1s infinite;
 }
 
-/* ===== HEADER ===== */
-.header {
-  padding: 15px 20px;
-  border-bottom: 1px solid #00eaff;
-  display: flex;
-  justify-content: space-between;
+/* boxes */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:20px;
+  margin-top:20px;
+}
+.box{
+  border:1px solid #00eaff;
+  padding:10px;
+}
+.btn{
+  border:1px solid #00eaff;
+  margin:5px 0;
+  padding:8px;
+  text-align:center;
+  cursor:pointer;
 }
 
-/* ===== MAIN ===== */
-.main {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 20px;
-  padding: 20px;
+/* animations */
+@keyframes spin{
+  from{transform:rotate(0deg);}
+  to{transform:rotate(360deg);}
+}
+@keyframes blink{
+  0%,100%{opacity:1;}
+  50%{opacity:0;}
 }
 
-/* ===== RADAR ===== */
-.radar {
-  width: 220px;
-  height: 220px;
-  border: 2px solid #00eaff;
-  border-radius: 50%;
-  position: relative;
-}
-
-.sweep {
-  position: absolute;
-  width: 2px;
-  height: 100%;
-  left: 50%;
-  background: #00ffcc;
-  transform-origin: bottom;
-  animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* ===== GRID ===== */
-.container {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-
-.box {
-  border: 1px solid #00eaff;
-  padding: 15px;
-}
-
-button {
-  width: 100%;
-  margin: 5px 0;
-  padding: 10px;
-  background: transparent;
-  border: 1px solid #00eaff;
-  color: #00eaff;
-  cursor: pointer;
-}
-
-/* ===== PROCESSING ===== */
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: black;
-  display: none;
-  justify-content: center;
-  align-items: center;
-}
-
-.overlay.active { display: flex; }
-
-/* ===== MOBILE ===== */
-@media (max-width: 768px) {
-  .main {
-    grid-template-columns: 1fr;
-  }
-  .container {
-    grid-template-columns: 1fr;
+/* 📱 mobile */
+@media(max-width:768px){
+  .top{
+    flex-direction:column;
+    align-items:center;
   }
 }
 </style>
@@ -146,129 +131,99 @@ button {
 <canvas id="stars"></canvas>
 
 <!-- LOGIN -->
-<div class="login" id="login">
-  <div class="login-box">
-    <h2>ENTER PASSWORD</h2>
-    <input type="password" id="pass" placeholder="Password">
-    <div class="msg" id="msg"></div>
-  </div>
+<div id="login">
+  <h2>ENTER PASSWORD</h2>
+  <input id="pass" type="password" placeholder="Enter">
+  <br>
+  <button onclick="check()">ENTER</button>
 </div>
 
-<!-- MAIN UI -->
-<div id="app" style="display:none;">
+<!-- MAIN -->
+<div id="main">
+  <h2>SFS CONTROL MATRIX</h2>
 
-<div class="header">
-  <div>SFS CONTROL MATRIX</div>
-  <div>SYSTEM ONLINE</div>
-</div>
-
-<div class="main">
-
-  <div>
+  <div class="top">
     <div class="radar">
-      <div class="sweep"></div>
+      <div class="dot"></div>
+    </div>
+
+    <div class="grid">
+      <div class="box">
+        CORE SYSTEM
+        <div class="btn">INIT</div>
+        <div class="btn">SYNC</div>
+        <div class="btn">BOOST</div>
+        <div class="btn">CHECK</div>
+      </div>
+
+      <div class="box">
+        SATELLITES
+        <div class="btn">SAT-01</div>
+        <div class="btn">SAT-02</div>
+        <div class="btn">SAT-03</div>
+      </div>
+
+      <div class="box">
+        SERVERS
+        <div class="btn">SRV-01</div>
+        <div class="btn">SRV-02</div>
+        <div class="btn">SRV-03</div>
+      </div>
+
+      <div class="box">
+        DATA STREAM
+        <div class="btn">START</div>
+        <div class="btn">STATUS</div>
+        <div class="btn">STOP</div>
+      </div>
     </div>
   </div>
-
-  <div class="container">
-
-    <div class="box">
-      <h2>CORE SYSTEM</h2>
-      <button>INIT</button>
-      <button>SYNC</button>
-      <button>BOOST</button>
-      <button>CHECK</button>
-    </div>
-
-    <div class="box">
-      <h2>SATELLITES</h2>
-      <button>SAT-01</button>
-      <button>SAT-02</button>
-      <button>SAT-03</button>
-    </div>
-
-    <div class="box">
-      <h2>SERVERS</h2>
-      <button>SRV-01</button>
-      <button>SRV-02</button>
-      <button>SRV-03</button>
-    </div>
-
-  </div>
-
 </div>
-
-</div>
-
-<!-- PROCESSING -->
-<div class="overlay" id="overlay">
-  <h1>ACCESS GRANTED</h1>
-</div>
-
-<!-- SOUND -->
-<audio id="sound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
 <script>
-
-/* PASSWORD SYSTEM */
-const correct = "2026"; // 
-const input = document.getElementById("pass");
-const msg = document.getElementById("msg");
-const login = document.getElementById("login");
-const app = document.getElementById("app");
-const overlay = document.getElementById("overlay");
-
-function check() {
-  if (input.value === correct) {
-    msg.innerText = "ACCESS GRANTED";
-    overlay.classList.add("active");
-
-    setTimeout(() => {
-      login.style.display = "none";
-      app.style.display = "block";
-      overlay.classList.remove("active");
-    }, 1000);
-
-  } else {
-    msg.innerText = "WRONG PASSWORD";
+/* 🔐 password */
+function check(){
+  let p=document.getElementById("pass").value;
+  if(p==="2026"){
+    document.getElementById("login").style.display="none";
+    document.getElementById("main").style.display="block";
+  }else{
+    alert("WRONG PASSWORD");
   }
 }
 
-/* ENTER KEY */
-input.addEventListener("keydown", e => {
-  if (e.key === "Enter") check();
+/* ENTER key */
+document.getElementById("pass").addEventListener("keypress",function(e){
+  if(e.key==="Enter") check();
 });
 
-/* STARS */
-const canvas = document.getElementById("stars");
-const ctx = canvas.getContext("2d");
+/* ⭐ stars */
+const canvas=document.getElementById("stars");
+const ctx=canvas.getContext("2d");
 
-canvas.width = innerWidth;
-canvas.height = innerHeight;
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
 
-let stars = [];
-for (let i = 0; i < 100; i++) {
+let stars=[];
+for(let i=0;i<100;i++){
   stars.push({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    v: Math.random() * 0.5 + 0.2
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    r:Math.random()*2
   });
 }
 
-function draw() {
+function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.fillStyle = "#00eaff";
-
-  stars.forEach(s => {
-    ctx.fillRect(s.x, s.y, 2, 2);
-    s.y += s.v;
-    if (s.y > canvas.height) s.y = 0;
+  ctx.fillStyle="#00eaff";
+  stars.forEach(s=>{
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fill();
   });
-
   requestAnimationFrame(draw);
 }
 draw();
-
 </script>
 
 </body>
