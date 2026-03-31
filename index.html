@@ -14,7 +14,6 @@ body{
   overflow:hidden;
 }
 
-/* BACKGROUND */
 canvas{
   position:fixed;
   top:0;
@@ -22,7 +21,6 @@ canvas{
   z-index:-1;
 }
 
-/* LOGIN */
 .login{
   position:fixed;
   inset:0;
@@ -44,7 +42,6 @@ button:hover{background:#00eaff22}
 
 .error{color:red;margin-top:10px}
 
-/* MAIN */
 #app{
   display:none;
   padding:20px;
@@ -54,7 +51,6 @@ button:hover{background:#00eaff22}
 
 h1{margin:0}
 
-/* HEADER */
 .header{
   display:flex;
   justify-content:space-between;
@@ -63,7 +59,6 @@ h1{margin:0}
 
 .status{font-size:12px}
 
-/* LAYOUT */
 .main{
   display:flex;
   gap:60px;
@@ -71,7 +66,6 @@ h1{margin:0}
   align-items:flex-start;
 }
 
-/* RADAR */
 .radar{
   width:240px;
   height:240px;
@@ -131,7 +125,6 @@ h1{margin:0}
   to{transform:rotate(360deg)}
 }
 
-/* GRID */
 .grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -149,7 +142,6 @@ h1{margin:0}
   margin:5px 0;
 }
 
-/* PROCESS */
 .process{
   position:fixed;
   bottom:0;
@@ -158,35 +150,31 @@ h1{margin:0}
   padding:10px;
   border-top:1px solid #00eaff;
   background:black;
+  max-height:120px;
+  overflow:auto;
+  font-size:12px;
 }
 
-/* MOBILE */
 @media(max-width:768px){
-
   body{overflow:auto;}
-
   #app{
     padding:10px;
     padding-bottom:80px;
   }
-
   .header{
     flex-direction:column;
     align-items:flex-start;
     gap:5px;
   }
-
   .main{
     flex-direction:column;
     align-items:center;
     gap:25px;
   }
-
   .radar{
     width:180px;
     height:180px;
   }
-
   .grid{
     grid-template-columns:1fr;
     width:100%;
@@ -286,31 +274,60 @@ pass.addEventListener("keypress",e=>{
   if(e.key==="Enter") check();
 });
 
-/* ✅ FIXED RUN (BOTTOM STATUS SHOW) */
+/* 🔥 FINAL FIXED TOGGLE */
+let states = {};
+
+function log(msg){
+  let p=document.getElementById("process");
+  p.innerHTML = "> " + msg + "<br>" + p.innerHTML;
+}
+
 function run(btn){
 
-  let old=btn.innerText;
-  let title=document.getElementById("title");
-  let p=document.getElementById("process");
+  // ✅ name lock
+  if(!btn.dataset.name){
+    btn.dataset.name = btn.innerText;
+  }
 
-  btn.innerText="PROCESSING...";
-  btn.disabled=true;
+  let name = btn.dataset.name;
+  let title = document.getElementById("title");
 
-  title.innerText=old+" PROCESSING...";
-  p.innerText="> "+old+" RUNNING...";
+  states[name] = !states[name];
 
-  setTimeout(()=>{
-    btn.innerText="DONE";
-    title.innerText="SUCCESS";
-    p.innerText="> SUCCESS";
-  },800);
+  if(states[name]){
 
-  setTimeout(()=>{
-    btn.innerText=old;
-    btn.disabled=false;
-    title.innerText="SFS CONTROL MATRIX";
-    p.innerText="> ACCESS GRANTED";
-  },1600);
+    btn.style.background="#00eaff22";
+    title.innerText = name + " ACTIVATED";
+
+    if(name==="LAUNCH"){
+      log("SFS ROCKET LAUNCH ACTIVATED 🚀");
+    }
+    else if(name==="START"){
+      log("DATA TRANSFER STARTED (7 MAY → 7 AUG)");
+    }
+    else if(name==="STOP"){
+      log("DATA TRANSFER STOPPED");
+    }
+    else if(name==="SRV-01" || name==="SRV-02"){
+      log("ROCKET SYSTEM SHUTDOWN ⚠️");
+    }
+    else if(name==="SRV-03"){
+      log("SERVER ROOM ONLINE");
+    }
+    else if(name==="SECURE"){
+      log("SYSTEM FULLY SECURED 🔒");
+    }
+    else{
+      log(name+" ACTIVATED");
+    }
+
+  }else{
+
+    btn.style.background="black";
+    title.innerText = name + " OFF";
+    log(name+" DEACTIVATED");
+
+  }
 }
 
 /* STARS */
