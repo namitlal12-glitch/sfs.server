@@ -70,16 +70,16 @@ h1{margin:0}
   margin-top:20px;
 }
 
-/* 🔥 PERFECT CIRCLE FIX */
+/* 🔥 PERFECT CIRCLE */
 .radar{
   width:240px;
-  aspect-ratio:1/1;   /* 🔥 main fix */
+  aspect-ratio:1/1;
   border-radius:50%;
   border:2px solid #00eaff;
   box-shadow:0 0 50px #00eaff;
   position:relative;
   overflow:hidden;
-  flex-shrink:0; /* stretch nahi hoga */
+  flex-shrink:0;
 }
 
 /* rings */
@@ -98,7 +98,7 @@ h1{margin:0}
   border:1px solid #00eaff22;
 }
 
-/* sweep */
+/* 🔄 SWEEP घूमेगा */
 .sweep{
   position:absolute;
   width:100%;
@@ -108,7 +108,7 @@ h1{margin:0}
   animation:spin 2s linear infinite;
 }
 
-/* dot */
+/* ✅ DOT STATIC + BLINK ONLY */
 .dot{
   position:absolute;
   width:6px;
@@ -124,6 +124,11 @@ h1{margin:0}
 @keyframes blink{
   from{opacity:0.3}
   to{opacity:1}
+}
+
+@keyframes spin{
+  from{transform:rotate(0deg)}
+  to{transform:rotate(360deg)}
 }
 
 /* GRID */
@@ -155,16 +160,14 @@ h1{margin:0}
   background:black;
 }
 
-/* 📱 MOBILE FIX */
+/* 📱 MOBILE */
 @media(max-width:768px){
 
-  body{
-    overflow:auto;
-  }
+  body{overflow:auto;}
 
   #app{
     padding:10px;
-    padding-bottom:80px; /* 🔥 gap fix */
+    padding-bottom:80px;
   }
 
   .main{
@@ -265,24 +268,22 @@ h1{margin:0}
 <script>
 let audioCtx;
 
-/* 🔥 SOUND FIX (mobile unlock + stable) */
 function beep(){
   if(!audioCtx){
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
-
-  if(audioCtx.state === "suspended"){
+  if(audioCtx.state==="suspended"){
     audioCtx.resume();
   }
 
-  let osc = audioCtx.createOscillator();
-  let gain = audioCtx.createGain();
+  let osc=audioCtx.createOscillator();
+  let gain=audioCtx.createGain();
 
   osc.connect(gain);
   gain.connect(audioCtx.destination);
 
-  osc.frequency.value = 700;
-  gain.gain.value = 0.1;
+  osc.frequency.value=700;
+  gain.gain.value=0.1;
 
   osc.start();
   setTimeout(()=>osc.stop(),120);
@@ -292,7 +293,7 @@ function check(){
   if(pass.value==="2026"){
     login.style.display="none";
     app.style.display="block";
-    beep(); /* unlock audio */
+    beep();
   }else{
     error.innerText="WRONG PASSWORD";
   }
@@ -302,7 +303,6 @@ pass.addEventListener("keypress",e=>{
   if(e.key==="Enter") check();
 });
 
-/* PROCESS */
 function run(btn){
 
   beep();
