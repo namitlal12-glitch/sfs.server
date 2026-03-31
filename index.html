@@ -14,7 +14,7 @@ body{
   overflow:hidden;
 }
 
-/* ⭐ stars background */
+/* ⭐ stars */
 canvas{
   position:fixed;
   top:0;
@@ -22,7 +22,7 @@ canvas{
   z-index:-1;
 }
 
-/* 🔐 LOGIN */
+/* 🔐 login */
 #login{
   position:absolute;
   top:50%;
@@ -30,74 +30,75 @@ canvas{
   transform:translate(-50%,-50%);
   text-align:center;
 }
-input{
+input,button{
   background:black;
   border:1px solid #00eaff;
   color:#00eaff;
   padding:10px;
 }
-button{
-  margin-top:10px;
-  padding:10px 20px;
-  background:black;
-  border:1px solid #00eaff;
-  color:#00eaff;
-  cursor:pointer;
-}
+button{cursor:pointer}
 
-/* MAIN UI */
-#main{
-  display:none;
-  padding:20px;
-}
+/* main */
+#main{display:none;padding:20px}
 
 .top{
   display:flex;
-  align-items:center;
   gap:40px;
+  align-items:center;
 }
 
-/* 🔵 RADAR */
+/* 🔵 radar */
 .radar{
-  width:200px;
-  height:200px;
+  width:220px;
+  height:220px;
   border:3px solid #00eaff;
   border-radius:50%;
   position:relative;
   box-shadow:0 0 20px #00eaff;
+  overflow:hidden;
 }
-.radar::before{
+
+/* scan line INSIDE */
+.scan{
+  position:absolute;
+  width:100%;
+  height:100%;
+  transform-origin:center;
+  animation:spin 3s linear infinite;
+}
+.scan::before{
   content:"";
   position:absolute;
   width:2px;
   height:100%;
   background:#00ffcc;
   left:50%;
-  transform-origin:bottom;
-  animation:spin 3s linear infinite;
 }
+
+/* moving dot */
 .dot{
   width:6px;
   height:6px;
   background:#00ffcc;
   border-radius:50%;
   position:absolute;
-  top:30%;
-  left:60%;
-  animation:blink 1s infinite;
+  top:50%;
+  left:50%;
+  animation:moveDot 3s linear infinite;
 }
 
-/* boxes */
+/* grid */
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
   gap:20px;
-  margin-top:20px;
 }
+
 .box{
   border:1px solid #00eaff;
   padding:10px;
 }
+
 .btn{
   border:1px solid #00eaff;
   margin:5px 0;
@@ -105,23 +106,28 @@ button{
   text-align:center;
   cursor:pointer;
 }
+.btn:hover{background:#00eaff;color:black}
+
+/* processing */
+.status{
+  margin-top:10px;
+  color:#00ffcc;
+}
 
 /* animations */
 @keyframes spin{
-  from{transform:rotate(0deg);}
-  to{transform:rotate(360deg);}
-}
-@keyframes blink{
-  0%,100%{opacity:1;}
-  50%{opacity:0;}
+  from{transform:rotate(0deg)}
+  to{transform:rotate(360deg)}
 }
 
-/* 📱 mobile */
+@keyframes moveDot{
+  0%{transform:rotate(0deg) translate(80px) rotate(0deg)}
+  100%{transform:rotate(360deg) translate(80px) rotate(-360deg)}
+}
+
+/* mobile */
 @media(max-width:768px){
-  .top{
-    flex-direction:column;
-    align-items:center;
-  }
+  .top{flex-direction:column}
 }
 </style>
 </head>
@@ -130,58 +136,78 @@ button{
 
 <canvas id="stars"></canvas>
 
-<!-- LOGIN -->
+<!-- login -->
 <div id="login">
   <h2>ENTER PASSWORD</h2>
-  <input id="pass" type="password" placeholder="Enter">
+  <input id="pass" type="password">
   <br>
   <button onclick="check()">ENTER</button>
 </div>
 
-<!-- MAIN -->
+<!-- main -->
 <div id="main">
   <h2>SFS CONTROL MATRIX</h2>
 
   <div class="top">
     <div class="radar">
+      <div class="scan"></div>
       <div class="dot"></div>
     </div>
 
     <div class="grid">
+
       <div class="box">
         CORE SYSTEM
-        <div class="btn">INIT</div>
-        <div class="btn">SYNC</div>
-        <div class="btn">BOOST</div>
-        <div class="btn">CHECK</div>
+        <div class="btn" onclick="run(this)">INIT</div>
+        <div class="btn" onclick="run(this)">SYNC</div>
+        <div class="btn" onclick="run(this)">BOOST</div>
+        <div class="btn" onclick="run(this)">CHECK</div>
       </div>
 
       <div class="box">
         SATELLITES
-        <div class="btn">SAT-01</div>
-        <div class="btn">SAT-02</div>
-        <div class="btn">SAT-03</div>
+        <div class="btn" onclick="run(this)">SAT-01</div>
+        <div class="btn" onclick="run(this)">SAT-02</div>
+        <div class="btn" onclick="run(this)">SAT-03</div>
       </div>
 
       <div class="box">
         SERVERS
-        <div class="btn">SRV-01</div>
-        <div class="btn">SRV-02</div>
-        <div class="btn">SRV-03</div>
+        <div class="btn" onclick="run(this)">SRV-01</div>
+        <div class="btn" onclick="run(this)">SRV-02</div>
+        <div class="btn" onclick="run(this)">SRV-03</div>
+      </div>
+
+      <div class="box">
+        FLIGHT CONTROL
+        <div class="btn" onclick="run(this)">LAUNCH</div>
+        <div class="btn" onclick="run(this)">LOCK</div>
+        <div class="btn" onclick="run(this)">ENGINE</div>
       </div>
 
       <div class="box">
         DATA STREAM
-        <div class="btn">START</div>
-        <div class="btn">STATUS</div>
-        <div class="btn">STOP</div>
+        <div class="btn" onclick="run(this)">START</div>
+        <div class="btn" onclick="run(this)">STATUS</div>
+        <div class="btn" onclick="run(this)">STOP</div>
       </div>
+
+      <div class="box">
+        NETWORK
+        <div class="btn" onclick="run(this)">NODE</div>
+        <div class="btn" onclick="run(this)">SEND</div>
+        <div class="btn" onclick="run(this)">SECURE</div>
+      </div>
+
     </div>
   </div>
+
+  <div class="status" id="status"></div>
+
 </div>
 
 <script>
-/* 🔐 password */
+/* password */
 function check(){
   let p=document.getElementById("pass").value;
   if(p==="2026"){
@@ -192,12 +218,22 @@ function check(){
   }
 }
 
-/* ENTER key */
-document.getElementById("pass").addEventListener("keypress",function(e){
+/* enter key */
+document.getElementById("pass").addEventListener("keypress",e=>{
   if(e.key==="Enter") check();
 });
 
-/* ⭐ stars */
+/* processing */
+function run(btn){
+  let status=document.getElementById("status");
+  status.innerText="> PROCESSING "+btn.innerText+"...";
+  
+  setTimeout(()=>{
+    status.innerText="> "+btn.innerText+" DONE ✔";
+  },1500);
+}
+
+/* stars */
 const canvas=document.getElementById("stars");
 const ctx=canvas.getContext("2d");
 
@@ -205,7 +241,7 @@ canvas.width=window.innerWidth;
 canvas.height=window.innerHeight;
 
 let stars=[];
-for(let i=0;i<100;i++){
+for(let i=0;i<120;i++){
   stars.push({
     x:Math.random()*canvas.width,
     y:Math.random()*canvas.height,
