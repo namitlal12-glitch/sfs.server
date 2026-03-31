@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -47,88 +45,90 @@ button:hover{background:#00eaff22}
 .error{color:red;margin-top:10px}
 
 /* MAIN */
-#app{display:none;padding:20px}
+#app{
+  display:none;
+  padding:20px;
+  max-width:1200px;
+  margin:auto;
+}
+
 h1{margin:0}
 
-/* 🔥 TITLE + STATUS ALIGN FIX */
+/* HEADER */
 .header{
   display:flex;
   justify-content:space-between;
   align-items:center;
 }
 
-.status{
-  font-size:12px;
-}
+.status{font-size:12px}
 
 /* LAYOUT */
 .main{
   display:flex;
   gap:60px;
   margin-top:20px;
-  align-items:flex-start;
 }
 
-/* RADAR */
+/* 🔥 REAL RADAR */
 .radar{
   width:240px;
   height:240px;
   border-radius:50%;
   border:2px solid #00eaff;
-  box-shadow:0 0 40px #00eaff;
+  box-shadow:0 0 50px #00eaff;
   position:relative;
   overflow:hidden;
 }
 
+/* rings */
 .radar::before{
   content:"";
   position:absolute;
-  inset:30px;
+  inset:20px;
   border-radius:50%;
-  border:1px solid #00eaff55;
+  border:1px solid #00eaff44;
 }
 .radar::after{
   content:"";
   position:absolute;
-  inset:60px;
+  inset:50px;
   border-radius:50%;
-  border:1px solid #00eaff33;
+  border:1px solid #00eaff22;
 }
 
-/* SWEEP */
+/* sweep glow */
 .sweep{
   position:absolute;
-  width:50%;
-  height:2px;
-  background:#00ffcc;
-  top:50%;
-  left:50%;
-  transform-origin:left center;
+  width:100%;
+  height:100%;
+  background:conic-gradient(rgba(0,255,200,0.25) 0deg, transparent 60deg);
+  border-radius:50%;
   animation:spin 2s linear infinite;
 }
 
-/* ✅ DOT FINAL (NO MOVE ONLY BLINK) */
+/* dot static blink */
 .dot{
   position:absolute;
   width:6px;
   height:6px;
   background:#00ffcc;
   border-radius:50%;
-  top:40%;
-  left:60%;
+  top:45%;
+  left:65%;
+  box-shadow:0 0 10px #00ffcc;
   animation:blink 1s infinite alternate;
 }
 
-/* 🔥 removed spin completely */
 @keyframes blink{
-  from{opacity:0.2}
+  from{opacity:0.3}
   to{opacity:1}
 }
 
 /* GRID */
 .grid{
   display:grid;
-  grid-template-columns:repeat(3,1fr); /* FIX */
+  grid-template-columns:repeat(3,1fr);
   gap:20px;
   width:100%;
 }
@@ -143,7 +143,7 @@ h1{margin:0}
   margin:5px 0;
 }
 
-/* PROCESS BAR */
+/* PROCESS */
 .process{
   position:fixed;
   bottom:0;
@@ -154,38 +154,24 @@ h1{margin:0}
   background:black;
 }
 
-/* ANIMATION */
-@keyframes spin{
-  from{transform:rotate(0deg)}
-  to{transform:rotate(360deg)}
-}
-
-/* 📱 MOBILE FINAL FIX */
+/* 📱 MOBILE HARD FIX */
 @media(max-width:768px){
 
-  body{
-    overflow:auto;
-  }
+  body{overflow:auto;}
 
   #app{
     padding:10px;
   }
 
-  .header{
-    flex-direction:column;
-    align-items:flex-start;
-    gap:5px;
-  }
-
   .main{
     flex-direction:column;
-    align-items:center;
     gap:25px;
   }
 
   .radar{
     width:180px;
     height:180px;
+    margin:auto;
   }
 
   .grid{
@@ -207,7 +193,6 @@ h1{margin:0}
 
 <div id="app">
 
-  <!-- 🔥 HEADER FIX -->
   <div class="header">
     <h1 id="title">SFS CONTROL MATRIX</h1>
     <div class="status">SYSTEM ONLINE</div>
@@ -287,27 +272,61 @@ pass.addEventListener("keypress",e=>{
   if(e.key==="Enter") check();
 });
 
-/* PROCESS */
+/* 🔊 SOUND */
+function beep(){
+  let ctx=new AudioContext();
+  let osc=ctx.createOscillator();
+  osc.connect(ctx.destination);
+  osc.frequency.value=600;
+  osc.start();
+  setTimeout(()=>osc.stop(),100);
+}
+
+/* PROCESS + STORY */
 function run(btn){
 
-  let old = btn.innerText;
+  beep();
+
+  let old=btn.innerText;
+  let title=document.getElementById("title");
+  let p=document.getElementById("process");
 
   btn.innerText="PROCESSING...";
   btn.disabled=true;
 
-  let title = document.getElementById("title");
-  title.innerText = old + " PROCESSING...";
+  title.innerText=old+" PROCESSING...";
+
+  /* 🔥 STORY MODE */
+  p.innerText="> DATA TRANSFER START 7 MAY";
 
   setTimeout(()=>{
-    btn.innerText="DONE";
-    title.innerText = "SUCCESS";
+    p.innerText="> RFS-1 & RFS-2 LOADING...";
   },800);
 
   setTimeout(()=>{
-    btn.innerText=old;
-    title.innerText="SFS CONTROL MATRIX";
-    btn.disabled=false;
+    p.innerText="> RFS-3 TRANSFER ACTIVE...";
   },1600);
+
+  setTimeout(()=>{
+    p.innerText="> CORRUPT FILE DELETED...";
+  },2400);
+
+  setTimeout(()=>{
+    p.innerText="> SERVER ROOM SYNC...";
+  },3200);
+
+  setTimeout(()=>{
+    p.innerText="> COMPLETE 7 AUGUST";
+    title.innerText="SUCCESS";
+    btn.innerText="DONE";
+  },4200);
+
+  setTimeout(()=>{
+    btn.innerText=old;
+    btn.disabled=false;
+    title.innerText="SFS CONTROL MATRIX";
+    p.innerText="> ACCESS GRANTED";
+  },6000);
 }
 
 /* STARS */
