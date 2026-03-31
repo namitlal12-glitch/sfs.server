@@ -50,6 +50,17 @@ button:hover{background:#00eaff22}
 #app{display:none;padding:20px}
 h1{margin:0}
 
+/* 🔥 TITLE + STATUS ALIGN FIX */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.status{
+  font-size:12px;
+}
+
 /* LAYOUT */
 .main{
   display:flex;
@@ -96,18 +107,19 @@ h1{margin:0}
   animation:spin 2s linear infinite;
 }
 
-/* ✅ FINAL DOT FIX (STATIC + BLINK) */
+/* ✅ DOT FINAL (NO MOVE ONLY BLINK) */
 .dot{
   position:absolute;
   width:6px;
   height:6px;
   background:#00ffcc;
   border-radius:50%;
-  top:35%;
-  left:65%;
+  top:40%;
+  left:60%;
   animation:blink 1s infinite alternate;
 }
 
+/* 🔥 removed spin completely */
 @keyframes blink{
   from{opacity:0.2}
   to{opacity:1}
@@ -116,8 +128,9 @@ h1{margin:0}
 /* GRID */
 .grid{
   display:grid;
-  grid-template-columns:repeat(3,220px);
+  grid-template-columns:repeat(3,1fr); /* FIX */
   gap:20px;
+  width:100%;
 }
 
 .box{
@@ -147,15 +160,21 @@ h1{margin:0}
   to{transform:rotate(360deg)}
 }
 
-/* 📱 MOBILE FIX FINAL */
+/* 📱 MOBILE FINAL FIX */
 @media(max-width:768px){
 
   body{
-    overflow-x:hidden;
+    overflow:auto;
   }
 
   #app{
     padding:10px;
+  }
+
+  .header{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:5px;
   }
 
   .main{
@@ -171,11 +190,6 @@ h1{margin:0}
 
   .grid{
     grid-template-columns:1fr;
-    width:100%;
-  }
-
-  .box{
-    width:100%;
   }
 }
 </style>
@@ -192,9 +206,12 @@ h1{margin:0}
 </div>
 
 <div id="app">
-  <h1 id="title">SFS CONTROL MATRIX</h1>
-  <!-- ✅ LEFT ALIGN -->
-  <p style="text-align:left;">SYSTEM ONLINE</p>
+
+  <!-- 🔥 HEADER FIX -->
+  <div class="header">
+    <h1 id="title">SFS CONTROL MATRIX</h1>
+    <div class="status">SYSTEM ONLINE</div>
+  </div>
 
   <div class="main">
 
