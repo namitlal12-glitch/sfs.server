@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,7 +15,7 @@ body{
   overflow:hidden;
 }
 
-/* ===== BACKGROUND ===== */
+/* BACKGROUND */
 canvas{
   position:fixed;
   top:0;
@@ -22,7 +23,7 @@ canvas{
   z-index:-1;
 }
 
-/* ===== LOGIN ===== */
+/* LOGIN */
 .login{
   position:fixed;
   inset:0;
@@ -32,39 +33,23 @@ canvas{
   flex-direction:column;
 }
 
-input{
+input,button{
   padding:10px;
   border:1px solid #00eaff;
   background:black;
   color:#00eaff;
 }
 
-button{
-  padding:10px 20px;
-  background:transparent;
-  border:1px solid #00eaff;
-  color:#00eaff;
-  cursor:pointer;
-}
+button{cursor:pointer}
+button:hover{background:#00eaff22}
 
-button:hover{
-  background:#00eaff22;
-}
+.error{color:red;margin-top:10px}
 
-.error{
-  color:red;
-  margin-top:10px;
-}
-
-/* ===== MAIN ===== */
-#app{
-  display:none;
-  padding:20px;
-}
-
+/* MAIN */
+#app{display:none;padding:20px}
 h1{margin:0}
 
-/* ===== LAYOUT ===== */
+/* LAYOUT */
 .main{
   display:flex;
   gap:60px;
@@ -72,7 +57,7 @@ h1{margin:0}
   align-items:flex-start;
 }
 
-/* ===== RADAR (FIXED REAL) ===== */
+/* RADAR */
 .radar{
   width:240px;
   height:240px;
@@ -83,7 +68,6 @@ h1{margin:0}
   overflow:hidden;
 }
 
-/* rings */
 .radar::before{
   content:"";
   position:absolute;
@@ -99,7 +83,7 @@ h1{margin:0}
   border:1px solid #00eaff33;
 }
 
-/* 🔥 OLD STYLE LINE SWEEP */
+/* SWEEP */
 .sweep{
   position:absolute;
   width:50%;
@@ -111,7 +95,7 @@ h1{margin:0}
   animation:spin 2s linear infinite;
 }
 
-/* DOT */
+/* ✅ DOT FIX (अब बाहर नहीं जाएगा) */
 .dot{
   position:absolute;
   width:6px;
@@ -120,11 +104,11 @@ h1{margin:0}
   border-radius:50%;
   top:50%;
   left:50%;
-  transform-origin:-80px;
+  transform-origin:-60px; /* FIX */
   animation:dotSpin 2s linear infinite;
 }
 
-/* ===== GRID ===== */
+/* GRID */
 .grid{
   display:grid;
   grid-template-columns:repeat(3,220px);
@@ -141,7 +125,7 @@ h1{margin:0}
   margin:5px 0;
 }
 
-/* ===== PROCESS ===== */
+/* PROCESS BAR */
 .process{
   position:fixed;
   bottom:0;
@@ -152,22 +136,22 @@ h1{margin:0}
   background:black;
 }
 
-/* ===== ANIMATION ===== */
+/* ANIMATION */
 @keyframes spin{
   from{transform:rotate(0deg)}
   to{transform:rotate(360deg)}
 }
 
 @keyframes dotSpin{
-  from{transform:rotate(0deg) translateX(80px)}
-  to{transform:rotate(360deg) translateX(80px)}
+  from{transform:rotate(0deg) translateX(60px)} /* FIX */
+  to{transform:rotate(360deg) translateX(60px)}
 }
 
-/* ===== MOBILE FIX ===== */
+/* 📱 MOBILE PERFECT FIX */
 @media(max-width:768px){
 
   body{
-    overflow-x:hidden;
+    overflow:auto;
   }
 
   #app{
@@ -181,8 +165,8 @@ h1{margin:0}
   }
 
   .radar{
-    width:200px;
-    height:200px;
+    width:180px;
+    height:180px;
   }
 
   .grid{
@@ -204,7 +188,7 @@ h1{margin:0}
 </div>
 
 <div id="app">
-  <h1>SFS CONTROL MATRIX</h1>
+  <h1 id="title">SFS CONTROL MATRIX</h1>
   <p>SYSTEM ONLINE</p>
 
   <div class="main">
@@ -269,8 +253,7 @@ h1{margin:0}
 
 <script>
 function check(){
-  let val=pass.value;
-  if(val==="2026"){
+  if(pass.value==="2026"){
     login.style.display="none";
     app.style.display="block";
   }else{
@@ -282,7 +265,7 @@ pass.addEventListener("keypress",e=>{
   if(e.key==="Enter") check();
 });
 
-/* 🔥 FIXED PROCESSING */
+/* ✅ PROCESS TOP + BUTTON BOTH */
 function run(btn){
 
   let old = btn.innerText;
@@ -290,14 +273,20 @@ function run(btn){
   btn.innerText="PROCESSING...";
   btn.disabled=true;
 
+  // 🔥 TOP TEXT
+  let title = document.getElementById("title");
+  title.innerText = old + " PROCESSING...";
+
   setTimeout(()=>{
     btn.innerText="DONE";
-  },700);
+    title.innerText = "SUCCESS";
+  },800);
 
   setTimeout(()=>{
     btn.innerText=old;
+    title.innerText="SFS CONTROL MATRIX";
     btn.disabled=false;
-  },1400);
+  },1600);
 }
 
 /* STARS */
