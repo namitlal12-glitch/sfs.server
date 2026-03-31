@@ -6,15 +6,15 @@
 <title>SFS CONTROL MATRIX</title>
 
 <style>
-body{
+body {
   margin:0;
-  background:#020a0f;
+  background:black;
   color:#00eaff;
   font-family:monospace;
-  overflow:hidden;
+  overflow-x:hidden;
 }
 
-/* ⭐ stars */
+/* ===== BACKGROUND ===== */
 canvas{
   position:fixed;
   top:0;
@@ -22,32 +22,28 @@ canvas{
   z-index:-1;
 }
 
-/* 🔐 login */
-#login{
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
+/* ===== HEADER ===== */
+h1{
   text-align:center;
+  margin-top:20px;
 }
-input,button{
-  background:black;
-  border:1px solid #00eaff;
-  color:#00eaff;
-  padding:10px;
+
+.sub{
+  text-align:center;
+  opacity:0.7;
 }
-button{cursor:pointer}
 
-/* main */
-#main{display:none;padding:20px}
-
-.top{
+/* ===== LAYOUT ===== */
+.main{
   display:flex;
+  align-items:flex-start;
+  justify-content:center;
   gap:40px;
-  align-items:center;
+  padding:30px;
+  flex-wrap:wrap;
 }
 
-/* 🔵 radar */
+/* ===== RADAR ===== */
 .radar{
   width:220px;
   height:220px;
@@ -55,210 +51,252 @@ button{cursor:pointer}
   border-radius:50%;
   position:relative;
   box-shadow:0 0 20px #00eaff;
-  overflow:hidden;
 }
 
-/* scan line INSIDE */
-.scan{
-  position:absolute;
-  width:100%;
-  height:100%;
-  transform-origin:center;
-  animation:spin 3s linear infinite;
-}
-.scan::before{
+/* rotating line */
+.radar::before{
   content:"";
   position:absolute;
-  width:2px;
-  height:100%;
-  background:#00ffcc;
+  width:50%;
+  height:2px;
+  background:#00eaff;
+  top:50%;
   left:50%;
+  transform-origin:left;
+  animation:rotate 2s linear infinite;
 }
 
-/* moving dot */
+/* dot */
 .dot{
   width:6px;
   height:6px;
-  background:#00ffcc;
+  background:#00eaff;
   border-radius:50%;
   position:absolute;
   top:50%;
   left:50%;
-  animation:moveDot 3s linear infinite;
+  transform-origin:-80px;
+  animation:dotMove 2s linear infinite;
 }
 
-/* grid */
+/* circle rings */
+.radar::after{
+  content:"";
+  position:absolute;
+  inset:20px;
+  border:1px solid #00eaff55;
+  border-radius:50%;
+}
+
+/* ===== PANELS ===== */
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
   gap:20px;
+  max-width:900px;
 }
 
 .box{
   border:1px solid #00eaff;
-  padding:10px;
+  padding:15px;
 }
 
-.btn{
-  border:1px solid #00eaff;
+button{
+  width:100%;
   margin:5px 0;
-  padding:8px;
-  text-align:center;
+  padding:10px;
+  background:transparent;
+  border:1px solid #00eaff;
+  color:#00eaff;
   cursor:pointer;
 }
-.btn:hover{background:#00eaff;color:black}
 
-/* processing */
-.status{
-  margin-top:10px;
-  color:#00ffcc;
+button:hover{
+  background:#00eaff22;
 }
 
-/* animations */
-@keyframes spin{
+/* ===== PROCESSING ===== */
+.processing{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  padding:10px;
+  border-top:1px solid #00eaff;
+  background:black;
+}
+
+/* ===== PASSWORD SCREEN ===== */
+.login{
+  position:fixed;
+  inset:0;
+  background:black;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+}
+
+input{
+  padding:10px;
+  background:black;
+  border:1px solid #00eaff;
+  color:#00eaff;
+}
+
+/* ===== ANIMATION ===== */
+@keyframes rotate{
   from{transform:rotate(0deg)}
   to{transform:rotate(360deg)}
 }
 
-@keyframes moveDot{
-  0%{transform:rotate(0deg) translate(80px) rotate(0deg)}
-  100%{transform:rotate(360deg) translate(80px) rotate(-360deg)}
-}
-
-/* mobile */
-@media(max-width:768px){
-  .top{flex-direction:column}
+@keyframes dotMove{
+  from{transform:rotate(0deg) translateX(80px)}
+  to{transform:rotate(360deg) translateX(80px)}
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="stars"></canvas>
-
-<!-- login -->
-<div id="login">
+<!-- PASSWORD -->
+<div class="login" id="login">
   <h2>ENTER PASSWORD</h2>
-  <input id="pass" type="password">
-  <br>
+  <input id="pass" type="password" placeholder="Password">
+  <br><br>
   <button onclick="check()">ENTER</button>
+  <p id="msg"></p>
 </div>
 
-<!-- main -->
-<div id="main">
-  <h2>SFS CONTROL MATRIX</h2>
+<!-- MAIN -->
+<div id="app" style="display:none;">
 
-  <div class="top">
-    <div class="radar">
-      <div class="scan"></div>
-      <div class="dot"></div>
-    </div>
+<h1>SFS CONTROL MATRIX</h1>
+<p class="sub">SYSTEM ONLINE</p>
 
-    <div class="grid">
+<div class="main">
 
-      <div class="box">
-        CORE SYSTEM
-        <div class="btn" onclick="run(this)">INIT</div>
-        <div class="btn" onclick="run(this)">SYNC</div>
-        <div class="btn" onclick="run(this)">BOOST</div>
-        <div class="btn" onclick="run(this)">CHECK</div>
-      </div>
-
-      <div class="box">
-        SATELLITES
-        <div class="btn" onclick="run(this)">SAT-01</div>
-        <div class="btn" onclick="run(this)">SAT-02</div>
-        <div class="btn" onclick="run(this)">SAT-03</div>
-      </div>
-
-      <div class="box">
-        SERVERS
-        <div class="btn" onclick="run(this)">SRV-01</div>
-        <div class="btn" onclick="run(this)">SRV-02</div>
-        <div class="btn" onclick="run(this)">SRV-03</div>
-      </div>
-
-      <div class="box">
-        FLIGHT CONTROL
-        <div class="btn" onclick="run(this)">LAUNCH</div>
-        <div class="btn" onclick="run(this)">LOCK</div>
-        <div class="btn" onclick="run(this)">ENGINE</div>
-      </div>
-
-      <div class="box">
-        DATA STREAM
-        <div class="btn" onclick="run(this)">START</div>
-        <div class="btn" onclick="run(this)">STATUS</div>
-        <div class="btn" onclick="run(this)">STOP</div>
-      </div>
-
-      <div class="box">
-        NETWORK
-        <div class="btn" onclick="run(this)">NODE</div>
-        <div class="btn" onclick="run(this)">SEND</div>
-        <div class="btn" onclick="run(this)">SECURE</div>
-      </div>
-
-    </div>
+  <!-- RADAR -->
+  <div class="radar">
+    <div class="dot"></div>
   </div>
 
-  <div class="status" id="status"></div>
+  <!-- GRID -->
+  <div class="grid">
+
+    <div class="box">
+      <h3>CORE SYSTEM</h3>
+      <button onclick="run()">INIT</button>
+      <button onclick="run()">SYNC</button>
+      <button onclick="run()">BOOST</button>
+      <button onclick="run()">CHECK</button>
+    </div>
+
+    <div class="box">
+      <h3>SATELLITES</h3>
+      <button onclick="run()">SAT-01</button>
+      <button onclick="run()">SAT-02</button>
+      <button onclick="run()">SAT-03</button>
+    </div>
+
+    <div class="box">
+      <h3>SERVERS</h3>
+      <button onclick="run()">SRV-01</button>
+      <button onclick="run()">SRV-02</button>
+      <button onclick="run()">SRV-03</button>
+    </div>
+
+    <div class="box">
+      <h3>FLIGHT CONTROL</h3>
+      <button onclick="run()">LAUNCH</button>
+      <button onclick="run()">LOCK</button>
+      <button onclick="run()">ENGINE</button>
+    </div>
+
+    <div class="box">
+      <h3>DATA STREAM</h3>
+      <button onclick="run()">START</button>
+      <button onclick="run()">STATUS</button>
+      <button onclick="run()">STOP</button>
+    </div>
+
+    <div class="box">
+      <h3>NETWORK</h3>
+      <button onclick="run()">NODE</button>
+      <button onclick="run()">SEND</button>
+      <button onclick="run()">SECURE</button>
+    </div>
+
+  </div>
 
 </div>
 
+<div class="processing" id="process">> ACCESS GRANTED</div>
+
+</div>
+
+<!-- BACKGROUND CANVAS -->
+<canvas id="bg"></canvas>
+
 <script>
-/* password */
+// PASSWORD
 function check(){
   let p=document.getElementById("pass").value;
   if(p==="2026"){
     document.getElementById("login").style.display="none";
-    document.getElementById("main").style.display="block";
+    document.getElementById("app").style.display="block";
   }else{
-    alert("WRONG PASSWORD");
+    document.getElementById("msg").innerText="WRONG PASSWORD";
   }
 }
 
-/* enter key */
-document.getElementById("pass").addEventListener("keypress",e=>{
+// ENTER KEY
+document.getElementById("pass").addEventListener("keypress",function(e){
   if(e.key==="Enter") check();
 });
 
-/* processing */
-function run(btn){
-  let status=document.getElementById("status");
-  status.innerText="> PROCESSING "+btn.innerText+"...";
-  
+// PROCESSING
+function run(){
+  let el=document.getElementById("process");
+  el.innerText="> PROCESSING...";
   setTimeout(()=>{
-    status.innerText="> "+btn.innerText+" DONE ✔";
-  },1500);
+    el.innerText="> ACCESS GRANTED";
+  },1000);
 }
 
-/* stars */
-const canvas=document.getElementById("stars");
+/* ===== BACKGROUND STARS ===== */
+const canvas=document.getElementById("bg");
 const ctx=canvas.getContext("2d");
 
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
+function resize(){
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+}
+resize();
+window.addEventListener("resize",resize);
 
 let stars=[];
-for(let i=0;i<120;i++){
+for(let i=0;i<150;i++){
   stars.push({
     x:Math.random()*canvas.width,
     y:Math.random()*canvas.height,
-    r:Math.random()*2
+    s:Math.random()*2
   });
 }
 
 function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.fillStyle="#00eaff";
-  stars.forEach(s=>{
-    ctx.beginPath();
-    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-    ctx.fill();
-  });
+
+  for(let s of stars){
+    ctx.fillStyle="#00eaff";
+    ctx.fillRect(s.x,s.y,s.s,s.s);
+    s.y+=0.3;
+    if(s.y>canvas.height) s.y=0;
+  }
+
   requestAnimationFrame(draw);
 }
+
 draw();
 </script>
 
