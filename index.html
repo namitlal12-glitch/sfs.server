@@ -68,18 +68,21 @@ h1{margin:0}
   display:flex;
   gap:60px;
   margin-top:20px;
+  align-items:flex-start;
 }
 
-/* 🔥 PERFECT CIRCLE */
+/* 🔥 PERFECT CIRCLE FIX (FINAL) */
 .radar{
   width:240px;
-  aspect-ratio:1/1;
+  height:240px;              /* 🔥 FIX: aspect-ratio हटाया */
+  min-width:240px;
+  min-height:240px;
   border-radius:50%;
   border:2px solid #00eaff;
   box-shadow:0 0 50px #00eaff;
   position:relative;
   overflow:hidden;
-  flex-shrink:0;
+  flex-shrink:0;             /* stretch रोकता है */
 }
 
 /* rings */
@@ -98,7 +101,7 @@ h1{margin:0}
   border:1px solid #00eaff22;
 }
 
-/* 🔄 SWEEP घूमेगा */
+/* sweep */
 .sweep{
   position:absolute;
   width:100%;
@@ -108,7 +111,7 @@ h1{margin:0}
   animation:spin 2s linear infinite;
 }
 
-/* ✅ DOT STATIC + BLINK ONLY */
+/* DOT STATIC */
 .dot{
   position:absolute;
   width:6px;
@@ -160,29 +163,38 @@ h1{margin:0}
   background:black;
 }
 
-/* 📱 MOBILE */
+/* 📱 MOBILE (BACK TO ORIGINAL STYLE) */
 @media(max-width:768px){
 
-  body{overflow:auto;}
+  body{
+    overflow:auto;
+  }
 
   #app{
     padding:10px;
     padding-bottom:80px;
   }
 
+  .header{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:5px;
+  }
+
   .main{
     flex-direction:column;
+    align-items:center;
     gap:25px;
   }
 
   .radar{
     width:180px;
-    aspect-ratio:1/1;
-    margin:auto;
+    height:180px;   /* 🔥 FIX mobile */
   }
 
   .grid{
     grid-template-columns:1fr;
+    width:100%;
   }
 }
 </style>
@@ -266,34 +278,10 @@ h1{margin:0}
 <canvas id="bg"></canvas>
 
 <script>
-let audioCtx;
-
-function beep(){
-  if(!audioCtx){
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  if(audioCtx.state==="suspended"){
-    audioCtx.resume();
-  }
-
-  let osc=audioCtx.createOscillator();
-  let gain=audioCtx.createGain();
-
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-
-  osc.frequency.value=700;
-  gain.gain.value=0.1;
-
-  osc.start();
-  setTimeout(()=>osc.stop(),120);
-}
-
 function check(){
   if(pass.value==="2026"){
     login.style.display="none";
     app.style.display="block";
-    beep();
   }else{
     error.innerText="WRONG PASSWORD";
   }
@@ -304,37 +292,24 @@ pass.addEventListener("keypress",e=>{
 });
 
 function run(btn){
-
-  beep();
-
   let old=btn.innerText;
   let title=document.getElementById("title");
-  let p=document.getElementById("process");
 
   btn.innerText="PROCESSING...";
   btn.disabled=true;
 
   title.innerText=old+" PROCESSING...";
 
-  p.innerText="> DATA TRANSFER START 7 MAY";
-
-  setTimeout(()=>p.innerText="> RFS-1 & RFS-2 LOADING...",800);
-  setTimeout(()=>p.innerText="> RFS-3 TRANSFER ACTIVE...",1600);
-  setTimeout(()=>p.innerText="> CORRUPT FILE DELETED...",2400);
-  setTimeout(()=>p.innerText="> SERVER ROOM SYNC...",3200);
-
   setTimeout(()=>{
-    p.innerText="> COMPLETE 7 AUGUST";
-    title.innerText="SUCCESS";
     btn.innerText="DONE";
-  },4200);
+    title.innerText="SUCCESS";
+  },800);
 
   setTimeout(()=>{
     btn.innerText=old;
     btn.disabled=false;
     title.innerText="SFS CONTROL MATRIX";
-    p.innerText="> ACCESS GRANTED";
-  },6000);
+  },1600);
 }
 
 /* STARS */
