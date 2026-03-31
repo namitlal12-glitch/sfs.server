@@ -438,6 +438,78 @@ function draw(){
   requestAnimationFrame(draw);
 }
 draw();
+// 🔥 OVERRIDE SAVE SYSTEM (NO DELETE NEEDED)
+(function(){
+
+  // old save system ko ignore kar
+  window.saveState = function(){
+    localStorage.setItem("sfs_states", JSON.stringify(states));
+  };
+
+  window.loadState = function(){
+    let data = localStorage.getItem("sfs_states");
+
+    if(data){
+      let ok = confirm("Do you want to load previous saved data?");
+
+      if(ok){
+        states = JSON.parse(data);
+
+        // UI restore
+        document.querySelectorAll(".box button").forEach(btn=>{
+          let name = btn.innerText;
+          if(states[name]){
+            btn.style.background="#00eaff22";
+          }else{
+            btn.style.background="black";
+          }
+        });
+
+        log("Previous data loaded");
+      }else{
+        localStorage.removeItem("sfs_states");
+        states = {};
+        log("Data reset");
+      }
+    }
+  };
+
+// 🔥 OVERRIDE SAVE SYSTEM (NO DELETE NEEDED)
+(function(){
+
+
+  window.saveState = function(){
+    localStorage.setItem("sfs_states", JSON.stringify(states));
+  };
+
+  window.loadState = function(){
+    let data = localStorage.getItem("sfs_states");
+
+    if(data){
+      let ok = confirm("Do you want to load previous saved data?");
+
+      if(ok){
+        states = JSON.parse(data);
+
+        // UI restore
+        document.querySelectorAll(".box button").forEach(btn=>{
+          let name = btn.innerText;
+          if(states[name]){
+            btn.style.background="#00eaff22";
+          }else{
+            btn.style.background="black";
+          }
+        });
+
+        log("Previous data loaded");
+      }else{
+        localStorage.removeItem("sfs_states");
+        states = {};
+        log("Data reset");
+      }
+    }
+  };
+
 </script>
 
 </body>
