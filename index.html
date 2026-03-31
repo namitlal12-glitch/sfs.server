@@ -161,16 +161,15 @@ h1{margin:0}
   font-size:12px;
 }
 
-/* ✅ FIXED POSITION */
+/* ✅ FIXED SAVE BUTTON (inside box) */
 .saveToggle{
   position:absolute;
-  right:20px;
-  bottom:12px;
+  right:10px;
+  bottom:10px;
   font-size:12px;
   border:1px solid #00eaff;
-  padding:6px 10px;
+  padding:6px;
   cursor:pointer;
-  background:black;
 }
 
 @media(max-width:768px){
@@ -228,7 +227,6 @@ h1{margin:0}
 
     <div class="grid">
 
-      <!-- SAME BUTTONS -->
       <div class="box">
         <h3>CORE SYSTEM</h3>
         <button onclick="run(this)">INIT</button>
@@ -275,6 +273,7 @@ h1{margin:0}
     </div>
   </div>
 
+  <!-- ✅ SAVE INSIDE -->
   <div class="process" id="process">
     > ACCESS GRANTED
     <div class="saveToggle" onclick="toggleSave()" id="saveBtn">SAVE: OFF</div>
@@ -285,39 +284,46 @@ h1{margin:0}
 <canvas id="bg"></canvas>
 
 <script>
+let audioCtx;
+function beep(freq=700){
+  if(!audioCtx){
+    audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  }
+  let osc=audioCtx.createOscillator();
+  let gain=audioCtx.createGain();
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.frequency.value=freq;
+  gain.gain.value=0.1;
+  osc.start();
+  setTimeout(()=>osc.stop(),100);
+}
+
 let states = {};
 let saveMode=false;
 
-/* 🔥 TOGGLE SAVE */
+/* ✅ FIX: SAVE MODE PERSIST */
 function toggleSave(){
   saveMode=!saveMode;
   localStorage.setItem("sfs_saveMode",saveMode);
   document.getElementById("saveBtn").innerText="SAVE: "+(saveMode?"ON":"OFF");
 }
 
-/* 🔥 LOAD WITH CONFIRM */
+/* ✅ FIX: LOAD BOTH */
 function loadState(){
+  let data=localStorage.getItem("sfs_states");
+  let mode=localStorage.getItem("sfs_saveMode");
 
-  let savedData = localStorage.getItem("sfs_states");
-  let savedMode = localStorage.getItem("sfs_saveMode");
-
-  if(savedMode==="true"){
+  if(mode==="true"){
     saveMode=true;
     document.getElementById("saveBtn").innerText="SAVE: ON";
+  }
 
-    if(savedData){
-      let ask = confirm("Do you want to load saved data?");
-      if(ask){
-        states = JSON.parse(savedData);
-      }else{
-        localStorage.removeItem("sfs_states");
-        states = {};
-      }
-    }
+  if(data && saveMode){
+    states=JSON.parse(data);
   }
 }
 
-/* 🔥 SAVE */
 function saveState(){
   if(saveMode){
     localStorage.setItem("sfs_states",JSON.stringify(states));
@@ -334,13 +340,104 @@ function check(){
   }
 }
 
+pass.addEventListener("keypress",e=>{
+  if(e.key==="Enter") check();
+});
+
+function log(msg){
+  let time=new Date().toLocaleTimeString();
+  let p=document.getElementById("process");
+  p.innerHTML="["+time+"] "+msg+"<br>"+p.innerHTML;
+}
+
 function run(btn){
-  let name=btn.innerText;
+
+  if(!btn.dataset.name){
+    btn.dataset.name=btn.innerText;
+  }
+
+  let name=btn.dataset.name;
+  let title=document.getElementById("title");
+
   states[name]=!states[name];
 
+  beep();
+
+  if(name==="LAUNCH" && (!states["INIT"] || !states["SYNC"])){
+    log("ERROR: INIT + SYNC REQUIRED ❌");
+    states[name]=false;
+    return;
+  }
+
+  if(name==="STOP"){
+    states["START"]=false;
+  }
+
+  if(name==="SRV-01" || name==="SRV-02"){
+    states["LAUNCH"]=false;
+  }
+
   btn.style.background=states[name]?"#00eaff22":"black";
+  title.innerText=name+(states[name]?" ACTIVATED":" OFF");
+
+  if(states[name]){
+    if(name==="LAUNCH"){
+      log("🚀 ROCKET LAUNCH STARTED");
+    }else if(name==="START"){
+      log("📡 DATA TRANSFER (7 MAY → 7 AUG)");
+    }else if(name==="STOP"){
+      log("⛔ DATA STOPPED");
+    }else if(name==="SRV-01"||name==="SRV-02"){
+      log("⚠️ ROCKET SHUTDOWN");
+    }else{
+      log(name+" ACTIVATED");
+    }
+  }else{
+    log(name+" DEACTIVATED");
+  }
+
   saveState();
 }
+
+/* STARS */
+const c=document.getElementById("bg");
+const ctx=c.getContext("2d");
+
+function resize(){
+  c.width=window.innerWidth;
+  c.height=window.innerHeight;
+}
+resize();
+window.addEventListener("resize",resize);
+
+let stars=[];
+for(let i=0;i<180;i++){
+  stars.push({
+    x:Math.random()*c.width,
+    y:Math.random()*c.height,
+    s:Math.random()*2
+  });
+}
+
+function draw(){
+  ctx.fillStyle="rgba(0,0,0,0.3)";
+  ctx.fillRect(0,0,c.width,c.height);
+
+  for(let s of stars){
+    ctx.fillStyle="#00eaff";
+    ctx.fillRect(s.x,s.y,s.s,s.s);
+
+    s.y+=0.4;
+
+    if(s.y>c.height){
+      s.y=0;
+      s.x=Math.random()*c.width;
+    }
+  }
+
+  requestAnimationFrame(draw);
+}
+draw();
 </script>
 
 </body>
