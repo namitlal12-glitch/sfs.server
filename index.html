@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -95,17 +96,21 @@ h1{margin:0}
   animation:spin 2s linear infinite;
 }
 
-/* ✅ DOT FIX (अब बाहर नहीं जाएगा) */
+/* ✅ FINAL DOT FIX (STATIC + BLINK) */
 .dot{
   position:absolute;
   width:6px;
   height:6px;
   background:#00ffcc;
   border-radius:50%;
-  top:50%;
-  left:50%;
-  transform-origin:-60px; /* FIX */
-  animation:dotSpin 2s linear infinite;
+  top:35%;
+  left:65%;
+  animation:blink 1s infinite alternate;
+}
+
+@keyframes blink{
+  from{opacity:0.2}
+  to{opacity:1}
 }
 
 /* GRID */
@@ -142,16 +147,11 @@ h1{margin:0}
   to{transform:rotate(360deg)}
 }
 
-@keyframes dotSpin{
-  from{transform:rotate(0deg) translateX(60px)} /* FIX */
-  to{transform:rotate(360deg) translateX(60px)}
-}
-
-/* 📱 MOBILE PERFECT FIX */
+/* 📱 MOBILE FIX FINAL */
 @media(max-width:768px){
 
   body{
-    overflow:auto;
+    overflow-x:hidden;
   }
 
   #app{
@@ -161,7 +161,7 @@ h1{margin:0}
   .main{
     flex-direction:column;
     align-items:center;
-    gap:30px;
+    gap:25px;
   }
 
   .radar{
@@ -171,6 +171,10 @@ h1{margin:0}
 
   .grid{
     grid-template-columns:1fr;
+    width:100%;
+  }
+
+  .box{
     width:100%;
   }
 }
@@ -189,7 +193,8 @@ h1{margin:0}
 
 <div id="app">
   <h1 id="title">SFS CONTROL MATRIX</h1>
-  <p>SYSTEM ONLINE</p>
+  <!-- ✅ LEFT ALIGN -->
+  <p style="text-align:left;">SYSTEM ONLINE</p>
 
   <div class="main">
 
@@ -265,7 +270,7 @@ pass.addEventListener("keypress",e=>{
   if(e.key==="Enter") check();
 });
 
-/* ✅ PROCESS TOP + BUTTON BOTH */
+/* PROCESS */
 function run(btn){
 
   let old = btn.innerText;
@@ -273,7 +278,6 @@ function run(btn){
   btn.innerText="PROCESSING...";
   btn.disabled=true;
 
-  // 🔥 TOP TEXT
   let title = document.getElementById("title");
   title.innerText = old + " PROCESSING...";
 
