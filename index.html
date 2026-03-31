@@ -70,15 +70,16 @@ h1{margin:0}
   margin-top:20px;
 }
 
-/* 🔥 REAL RADAR */
+/* 🔥 PERFECT CIRCLE FIX */
 .radar{
   width:240px;
-  height:240px;
+  aspect-ratio:1/1;   /* 🔥 main fix */
   border-radius:50%;
   border:2px solid #00eaff;
   box-shadow:0 0 50px #00eaff;
   position:relative;
   overflow:hidden;
+  flex-shrink:0; /* stretch nahi hoga */
 }
 
 /* rings */
@@ -97,7 +98,7 @@ h1{margin:0}
   border:1px solid #00eaff22;
 }
 
-/* sweep glow */
+/* sweep */
 .sweep{
   position:absolute;
   width:100%;
@@ -107,7 +108,7 @@ h1{margin:0}
   animation:spin 2s linear infinite;
 }
 
-/* dot static blink */
+/* dot */
 .dot{
   position:absolute;
   width:6px;
@@ -154,13 +155,16 @@ h1{margin:0}
   background:black;
 }
 
-/* 📱 MOBILE HARD FIX */
+/* 📱 MOBILE FIX */
 @media(max-width:768px){
 
-  body{overflow:auto;}
+  body{
+    overflow:auto;
+  }
 
   #app{
     padding:10px;
+    padding-bottom:80px; /* 🔥 gap fix */
   }
 
   .main{
@@ -170,7 +174,7 @@ h1{margin:0}
 
   .radar{
     width:180px;
-    height:180px;
+    aspect-ratio:1/1;
     margin:auto;
   }
 
@@ -259,10 +263,36 @@ h1{margin:0}
 <canvas id="bg"></canvas>
 
 <script>
+let audioCtx;
+
+/* 🔥 SOUND FIX (mobile unlock + stable) */
+function beep(){
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  if(audioCtx.state === "suspended"){
+    audioCtx.resume();
+  }
+
+  let osc = audioCtx.createOscillator();
+  let gain = audioCtx.createGain();
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  osc.frequency.value = 700;
+  gain.gain.value = 0.1;
+
+  osc.start();
+  setTimeout(()=>osc.stop(),120);
+}
+
 function check(){
   if(pass.value==="2026"){
     login.style.display="none";
     app.style.display="block";
+    beep(); /* unlock audio */
   }else{
     error.innerText="WRONG PASSWORD";
   }
@@ -272,17 +302,7 @@ pass.addEventListener("keypress",e=>{
   if(e.key==="Enter") check();
 });
 
-/* 🔊 SOUND */
-function beep(){
-  let ctx=new AudioContext();
-  let osc=ctx.createOscillator();
-  osc.connect(ctx.destination);
-  osc.frequency.value=600;
-  osc.start();
-  setTimeout(()=>osc.stop(),100);
-}
-
-/* PROCESS + STORY */
+/* PROCESS */
 function run(btn){
 
   beep();
@@ -296,24 +316,12 @@ function run(btn){
 
   title.innerText=old+" PROCESSING...";
 
-  /* 🔥 STORY MODE */
   p.innerText="> DATA TRANSFER START 7 MAY";
 
-  setTimeout(()=>{
-    p.innerText="> RFS-1 & RFS-2 LOADING...";
-  },800);
-
-  setTimeout(()=>{
-    p.innerText="> RFS-3 TRANSFER ACTIVE...";
-  },1600);
-
-  setTimeout(()=>{
-    p.innerText="> CORRUPT FILE DELETED...";
-  },2400);
-
-  setTimeout(()=>{
-    p.innerText="> SERVER ROOM SYNC...";
-  },3200);
+  setTimeout(()=>p.innerText="> RFS-1 & RFS-2 LOADING...",800);
+  setTimeout(()=>p.innerText="> RFS-3 TRANSFER ACTIVE...",1600);
+  setTimeout(()=>p.innerText="> CORRUPT FILE DELETED...",2400);
+  setTimeout(()=>p.innerText="> SERVER ROOM SYNC...",3200);
 
   setTimeout(()=>{
     p.innerText="> COMPLETE 7 AUGUST";
