@@ -161,9 +161,9 @@ h1{margin:0}
   font-size:12px;
 }
 
-/* 🔥 SAVE TOGGLE UI */
+/* ✅ FIXED SAVE BUTTON (inside box) */
 .saveToggle{
-  position:fixed;
+  position:absolute;
   right:10px;
   bottom:10px;
   font-size:12px;
@@ -273,10 +273,13 @@ h1{margin:0}
     </div>
   </div>
 
-  <div class="process" id="process">> ACCESS GRANTED</div>
-</div>
+  <!-- ✅ SAVE INSIDE -->
+  <div class="process" id="process">
+    > ACCESS GRANTED
+    <div class="saveToggle" onclick="toggleSave()" id="saveBtn">SAVE: OFF</div>
+  </div>
 
-<div class="saveToggle" onclick="toggleSave()" id="saveBtn">SAVE: OFF</div>
+</div>
 
 <canvas id="bg"></canvas>
 
@@ -296,6 +299,37 @@ function beep(freq=700){
   setTimeout(()=>osc.stop(),100);
 }
 
+let states = {};
+let saveMode=false;
+
+/* ✅ FIX: SAVE MODE PERSIST */
+function toggleSave(){
+  saveMode=!saveMode;
+  localStorage.setItem("sfs_saveMode",saveMode);
+  document.getElementById("saveBtn").innerText="SAVE: "+(saveMode?"ON":"OFF");
+}
+
+/* ✅ FIX: LOAD BOTH */
+function loadState(){
+  let data=localStorage.getItem("sfs_states");
+  let mode=localStorage.getItem("sfs_saveMode");
+
+  if(mode==="true"){
+    saveMode=true;
+    document.getElementById("saveBtn").innerText="SAVE: ON";
+  }
+
+  if(data && saveMode){
+    states=JSON.parse(data);
+  }
+}
+
+function saveState(){
+  if(saveMode){
+    localStorage.setItem("sfs_states",JSON.stringify(states));
+  }
+}
+
 function check(){
   if(pass.value==="2026"){
     login.style.display="none";
@@ -310,34 +344,12 @@ pass.addEventListener("keypress",e=>{
   if(e.key==="Enter") check();
 });
 
-let states = {};
-let saveMode=false;
-
-function toggleSave(){
-  saveMode=!saveMode;
-  document.getElementById("saveBtn").innerText="SAVE: "+(saveMode?"ON":"OFF");
-}
-
-function saveState(){
-  if(saveMode){
-    localStorage.setItem("sfs_states",JSON.stringify(states));
-  }
-}
-
-function loadState(){
-  let data=localStorage.getItem("sfs_states");
-  if(data){
-    states=JSON.parse(data);
-  }
-}
-
 function log(msg){
   let time=new Date().toLocaleTimeString();
   let p=document.getElementById("process");
   p.innerHTML="["+time+"] "+msg+"<br>"+p.innerHTML;
 }
 
-/* 🔥 SMART LOGIC + TOGGLE */
 function run(btn){
 
   if(!btn.dataset.name){
@@ -351,7 +363,6 @@ function run(btn){
 
   beep();
 
-  // 🚀 SMART RULES
   if(name==="LAUNCH" && (!states["INIT"] || !states["SYNC"])){
     log("ERROR: INIT + SYNC REQUIRED ❌");
     states[name]=false;
@@ -366,11 +377,9 @@ function run(btn){
     states["LAUNCH"]=false;
   }
 
-  // UI update
   btn.style.background=states[name]?"#00eaff22":"black";
   title.innerText=name+(states[name]?" ACTIVATED":" OFF");
 
-  // logs
   if(states[name]){
     if(name==="LAUNCH"){
       log("🚀 ROCKET LAUNCH STARTED");
