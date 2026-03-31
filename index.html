@@ -6,12 +6,12 @@
 <title>SFS CONTROL MATRIX</title>
 
 <style>
-  hr{
-    border:1px solid #00eaff;
-    margin:0;
-    margin-top:20px;
-    margin-bottom:20px;
-  }
+hr{
+  border:1px solid #00eaff;
+  margin:0;
+  margin-top:20px;
+  margin-bottom:20px;
+}
 body{
   margin:0;
   background:black;
@@ -156,9 +156,20 @@ h1{margin:0}
   padding:10px;
   border-top:1px solid #00eaff;
   background:black;
-  max-height:120px;
+  max-height:140px;
   overflow:auto;
   font-size:12px;
+}
+
+/* 🔥 SAVE TOGGLE UI */
+.saveToggle{
+  position:fixed;
+  right:10px;
+  bottom:10px;
+  font-size:12px;
+  border:1px solid #00eaff;
+  padding:6px;
+  cursor:pointer;
 }
 
 @media(max-width:768px){
@@ -265,13 +276,31 @@ h1{margin:0}
   <div class="process" id="process">> ACCESS GRANTED</div>
 </div>
 
+<div class="saveToggle" onclick="toggleSave()" id="saveBtn">SAVE: OFF</div>
+
 <canvas id="bg"></canvas>
 
 <script>
+let audioCtx;
+function beep(freq=700){
+  if(!audioCtx){
+    audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  }
+  let osc=audioCtx.createOscillator();
+  let gain=audioCtx.createGain();
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.frequency.value=freq;
+  gain.gain.value=0.1;
+  osc.start();
+  setTimeout(()=>osc.stop(),100);
+}
+
 function check(){
   if(pass.value==="2026"){
     login.style.display="none";
     app.style.display="block";
+    loadState();
   }else{
     error.innerText="WRONG PASSWORD";
   }
@@ -281,60 +310,84 @@ pass.addEventListener("keypress",e=>{
   if(e.key==="Enter") check();
 });
 
-/* 🔥 FINAL FIXED TOGGLE */
 let states = {};
+let saveMode=false;
 
-function log(msg){
-  let p=document.getElementById("process");
-  p.innerHTML = "> " + msg + "<br>" + p.innerHTML;
+function toggleSave(){
+  saveMode=!saveMode;
+  document.getElementById("saveBtn").innerText="SAVE: "+(saveMode?"ON":"OFF");
 }
 
+function saveState(){
+  if(saveMode){
+    localStorage.setItem("sfs_states",JSON.stringify(states));
+  }
+}
+
+function loadState(){
+  let data=localStorage.getItem("sfs_states");
+  if(data){
+    states=JSON.parse(data);
+  }
+}
+
+function log(msg){
+  let time=new Date().toLocaleTimeString();
+  let p=document.getElementById("process");
+  p.innerHTML="["+time+"] "+msg+"<br>"+p.innerHTML;
+}
+
+/* 🔥 SMART LOGIC + TOGGLE */
 function run(btn){
 
-  // ✅ name lock
   if(!btn.dataset.name){
-    btn.dataset.name = btn.innerText;
+    btn.dataset.name=btn.innerText;
   }
 
-  let name = btn.dataset.name;
-  let title = document.getElementById("title");
+  let name=btn.dataset.name;
+  let title=document.getElementById("title");
 
-  states[name] = !states[name];
+  states[name]=!states[name];
 
+  beep();
+
+  // 🚀 SMART RULES
+  if(name==="LAUNCH" && (!states["INIT"] || !states["SYNC"])){
+    log("ERROR: INIT + SYNC REQUIRED ❌");
+    states[name]=false;
+    return;
+  }
+
+  if(name==="STOP"){
+    states["START"]=false;
+  }
+
+  if(name==="SRV-01" || name==="SRV-02"){
+    states["LAUNCH"]=false;
+  }
+
+  // UI update
+  btn.style.background=states[name]?"#00eaff22":"black";
+  title.innerText=name+(states[name]?" ACTIVATED":" OFF");
+
+  // logs
   if(states[name]){
-
-    btn.style.background="#00eaff22";
-    title.innerText = name + " ACTIVATED";
-
     if(name==="LAUNCH"){
-      log("SFS ROCKET LAUNCH ACTIVATED 🚀");
-    }
-    else if(name==="START"){
-      log("DATA TRANSFER STARTED (7 MAY → 7 AUG)");
-    }
-    else if(name==="STOP"){
-      log("DATA TRANSFER STOPPED");
-    }
-    else if(name==="SRV-01" || name==="SRV-02"){
-      log("ROCKET SYSTEM SHUTDOWN ⚠️");
-    }
-    else if(name==="SRV-03"){
-      log("SERVER ROOM ONLINE");
-    }
-    else if(name==="SECURE"){
-      log("SYSTEM FULLY SECURED 🔒");
-    }
-    else{
+      log("🚀 ROCKET LAUNCH STARTED");
+    }else if(name==="START"){
+      log("📡 DATA TRANSFER (7 MAY → 7 AUG)");
+    }else if(name==="STOP"){
+      log("⛔ DATA STOPPED");
+    }else if(name==="SRV-01"||name==="SRV-02"){
+      log("⚠️ ROCKET SHUTDOWN");
+    }else{
       log(name+" ACTIVATED");
     }
-
   }else{
-
-    btn.style.background="black";
-    title.innerText = name + " OFF";
     log(name+" DEACTIVATED");
-
   }
+
+  saveState();
 }
 
 /* STARS */
